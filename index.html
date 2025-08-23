@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tellonym Auto Loader - Fetch and download Tellonym Q&As instantly. No login, no auth, just plug & play.">
+  <meta name="keywords" content="Tellonym, Tellonym downloader, fetch Tellonym, Tellonym Q&A tool, Tellonym auto loader">
+  <meta name="author" content="Tellonym Auto Loader">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://www2.tellonym.me/assets/img/icon192x192.png">
+  <title>Telloverse - Fetch & Save Q&As</title>
+
+  <!-- Google AdSense Script (only once per page) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8226264829595977"
+          crossorigin="anonymous"></script>
+
+  <style>
+    /* ------------------- General Styles ------------------- */
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #0d0d0d; color: #fff; overflow-x: hidden; cursor: none; }
+    #cursor { position: fixed; top: 0; left: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 60, 125, 0.7); box-shadow: 0 0 20px rgba(255, 60, 125, 0.9), 0 0 40px rgba(255, 60, 125, 0.6); pointer-events: none; transform: translate(-50%, -50%); transition: transform 0.08s ease; z-index: 2000; }
+    body::before { content: ""; position: fixed; top:0; left:0; right:0; bottom:0; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px; animation: moveStars 15s linear infinite; z-index: -1; }
+    @keyframes moveStars { from { background-position:0 0; } to { background-position:100px 100px; } }
+
+    #intro { text-align:center; padding:40px 20px 20px; }
+    #intro h1 { font-size:2rem; display:flex; align-items:center; justify-content:center; }
+    .logo { height:40px; margin-right:8px; }
+    .subtitle { font-size:1rem; color:#aaa; margin-top:-8px; margin-bottom:20px; font-weight:400; }
+
+    /* FIXED: make the headline text responsive & drop typing animation */
+    #typed { 
+      font-size:1.1rem; 
+      color:#ff3c7d; 
+      display:inline-block; 
+      max-width: 800px;           /* keep it from stretching too wide on desktop */
+      width: calc(100% - 32px);   /* breathable on mobile */
+      white-space: normal;         /* allow wrapping */
+      word-break: break-word;      /* break long words if needed */
+      hyphens: auto;               /* nicer breaks on supported browsers */
+      text-align: center; 
+      line-height: 1.5;
+      margin: 0 auto; 
+      border-right: none;          /* remove cursor line */
+    }
+
+    #features { display:flex; justify-content:center; gap:20px; margin:30px auto; flex-wrap:wrap; max-width:800px; padding: 0 12px; }
+    .feature { background:#1a1a1a; padding:20px; border-radius:50px; flex:1 1 220px; text-align:center; border:1px solid #222; transition: transform 0.3s ease; }
+    .feature:hover { transform: translateY(-5px); border-color:#ff3c7d; box-shadow:0 0 15px rgba(255,60,125,0.5); }
+
+    #inputBox { text-align:center; margin:20px auto; }
+    #inputBox input { padding:12px; border-radius:50px; border:none; outline:none; width:240px; font-size:1rem; background:#1a1a1a; color:#ff3c7d; text-align:center; }
+    #inputBox button { margin-left:10px; padding:12px 18px; border:none; border-radius:50px; background:#ff3c7d; color:#fff; cursor:pointer; font-size:1rem; transition: transform 0.3s ease, background 0.3s ease; animation: pulseBtn 2s infinite; }
+    #inputBox button:hover { transform: scale(1.1); background:#ff5a96; }
+    @keyframes pulseBtn { 0%,100%{box-shadow:0 0 0px rgba(255,60,125,0.6);}50%{box-shadow:0 0 20px rgba(255,60,125,0.9);} }
+
+    .profile { display:flex; align-items:center; justify-content:center; gap:20px; margin:20px auto; max-width:600px; opacity:0; transform:scale(0.8); animation: profileFade 0.6s ease forwards; }
+    @keyframes profileFade { to { opacity:1; transform:scale(1); } }
+    .profile img { border-radius:50%; height:80px; width:80px; }
+
+    /* Keep the buttons exactly where they were (below profile), just ensure centering */
+    #btnBox { text-align:center; margin:20px 0; display:none; }
+    .btn { background:#ff3c7d; color:#fff; border:none; border-radius:50px; padding:10px 20px; margin:5px; cursor:pointer; transition: transform 0.2s ease; display: inline-block; }
+    .btn:hover { transform:scale(1.05); }
+
+    #answers { max-width:700px; margin:0 auto; padding:10px; }
+    .answer { background:#1a1a1a; padding:16px 20px; border-radius:50px; margin-bottom:15px; border:1px solid #222; animation: fadeSlide 0.5s ease forwards; }
+    .tell { font-weight:bold; margin-bottom:6px; color:#ff3c7d; }
+    .answer-time { font-size:0.8rem; color:#777; margin-top:6px; }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
+
+    footer { text-align:center; font-size:0.9rem; color:#888; padding:20px; }
+
+    #customAlert { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.65); display:none; align-items:center; justify-content:center; z-index:1000; backdrop-filter:blur(4px); }
+    #customAlert .box { background:#1a1a1a; color:#fff; padding:25px 30px; border-radius:50px; text-align:center; max-width:300px; box-shadow:0 10px 30px rgba(0,0,0,0.4); animation: popIn 0.6s ease forwards; }
+    #customAlert h3 { margin:0 0 10px; font-size:1.2rem; }
+    #customAlert p { margin:0 0 15px; font-size:0.95rem; color:#ccc; }
+    #customAlert button { background:#ff3c7d; color:#fff; padding:8px 18px; border:none; border-radius:50px; cursor:pointer; font-size:0.9rem; transition:transform 0.2s ease; }
+    #customAlert button:hover { transform:scale(1.05); }
+    @keyframes popIn { 0%{transform:scale(0.6);opacity:0;}60%{transform:scale(1.05);opacity:1;}100%{transform:scale(1);} }
+
+    /* ----------- Responsive Tweaks (minimal, not altering layout) ----------- */
+    @media (max-width: 768px) {
+      #intro h1 { font-size: 1.6rem; }
+      #typed { font-size: 0.98rem; max-width: 95%; }
+      .profile { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .logo { height: 32px; }
+      #typed { font-size: 0.92rem; line-height: 1.45; }
+      #inputBox input { width: 85%; margin-bottom: 10px; }
+      #inputBox button { margin-left: 0; display: inline-block; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+
+  <div id="intro">
+    <h1><img src="https://www2.tellonym.me/assets/img/tello_white.png" alt="Tellonym" class="logo">Telloverse</h1>
+    <h2 class="subtitle">🔓 No login. No auth. Just plug & play.</h2>
+    <!-- DROPPED the typing animation: text is now static & wraps naturally -->
+    <p id="typed">🚀 No more endless scrolling. Fetch all your Tellonym Q&As in seconds, save them, flex later. (No auth needed!)</p>
+  </div>
+
+  <div id="features">
+    <div class="feature"><h3>⚡ Instant Fetch</h3><p>Grab all Q&As from any profile in seconds.</p></div>
+    <div class="feature"><h3>📂 Easy Download</h3><p>Save everything neatly in one file, ready to share.</p></div>
+  </div>
+
+  <div id="inputBox">
+    <input type="text" id="usernameInput" placeholder="Enter Tellonym username">
+    <button onclick="startLoading()">Load Profile</button>
+  </div>
+
+  <div class="profile" id="profile"></div>
+
+  <div id="btnBox">
+    <button class="btn" onclick="loadAllAnswers()">Load All</button>
+    <button class="btn" onclick="downloadAnswers()">Download Q&A</button>
+  </div>
+
+  <div id="answers"></div>
+  <div id="loading"></div>
+  <div id="error"></div>
+
+  <!-- Bottom Banner Ad -->
+  <div style="text-align:center; margin:20px 0;">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-format="fluid"
+         data-ad-layout-key="-ef+6k-30-ac+ty"
+         data-ad-client="ca-pub-8226264829595977"
+         data-ad-slot="2208311961"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+<footer>
+  <div style="max-width:800px; margin:0 auto; text-align:center;">
+    <p>Made with ❤ for Tellonym users. Not affiliated with Tellonym GmbH.</p>
+    <p>Use responsibly. 🚀</p>
+    <div style="margin:10px 0;">
+      <a href="https://sudo6t6.github.io" target="_blank" style="margin:0 5px; color:#ff3c7d; text-decoration:none;">Webpage</a> |
+      <a href="https://instagram.com/sudo6t6" target="_blank" style="margin:0 5px; color:#ff3c7d; text-decoration:none;">Instagram</a> |
+      <a href="https://github.com/sudo6t6" target="_blank" style="margin:0 5px; color:#ff3c7d; text-decoration:none;">GitHub</a> |
+      <a href="https://tellonym.me/sudo6t6" style="margin:0 5px; color:#ff3c7d; text-decoration:none;">Tellonym</a>
+    </div>
+    <small style="color:#888;">© 2025 Telloverse. All rights reserved.</small>
+  </div>
+</footer>
+
+<div id="customAlert">
+  <div class="box">
+    <h3>🎉 All tells fetched!</h3>
+    <p>You can now download or browse them below.</p>
+    <button onclick="closeAlert()">Okay</button>
+  </div>
+</div>
+
+<script>
+  let userId = null, oldestId = null, loading = false, finished = false, username = null, allAnswers = [];
+
+  async function startLoading() {
+    username = document.getElementById("usernameInput").value.trim();
+    if(!username) return alert("Please enter a username");
+    document.getElementById("inputBox").style.display="none";
+    document.getElementById("loading").innerText="Loading...";
+    await loadProfile();
+  }
+
+  async function loadProfile() {
+    try {
+      const res = await fetch(`https://telloverse.vercel.app/api/profiles/name/${username}?limit=25`);
+      if(!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      if(data.error) throw new Error(data.error);
+
+      userId = data.id;
+      document.getElementById("profile").innerHTML = `
+        <img src="https://www2.tellonym.me/assets/img/tello_white.png" alt="avatar">
+        <div>
+          <h2>${data.displayName} (@${data.username})</h2>
+          <p>${data.aboutMe || ''}</p>
+          <small>${data.followerCount} followers • ${data.followingCount} following</small>
+        </div>
+      `;
+
+      document.getElementById("loading").innerText = "Scroll to load more...";
+      document.getElementById("btnBox").style.display = "block"; // keep same behavior/position
+
+      renderAnswers(data.answers);
+      if(data.answers && data.answers.length>0) oldestId = data.answers[data.answers.length-1].id;
+    } catch(err) {
+      document.getElementById("error").innerText="Failed to load profile: "+err.message;
+      document.getElementById("loading").innerText="";
+    }
+  }
+
+  function renderAnswers(answers) {
+    if(!Array.isArray(answers)) { if(answers.answers) answers=answers.answers; else return; }
+    const container = document.getElementById("answers");
+    answers.forEach((a,i) => {
+      if(!a.tell) return;
+      const el = document.createElement("div");
+      el.className="answer";
+      el.innerHTML = `<div class="tell">q) ${a.tell}</div><div>ans) ${a.answer}</div><div class="answer-time">${new Date(a.createdAt).toLocaleString()}</div>`;
+      container.appendChild(el);
+      allAnswers.push(a);
+
+      // Insert in-content ad every 10 answers (as before)
+      if((i+1)%10===0){
+        const ad = document.createElement("div");
+        ad.style.textAlign="center"; ad.style.margin="15px 0";
+        ad.innerHTML = `<ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="fluid"
+          data-ad-layout-key="-ef+6k-30-ac+ty"
+          data-ad-client="ca-pub-8226264829595977"
+          data-ad-slot="2208311961"></ins>`;
+        container.appendChild(ad);
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    });
+  }
+
+  async function loadMore() {
+    if(loading || finished || !userId || !oldestId) return;
+    loading=true; document.getElementById("loading").innerText="Loading more...";
+    try {
+      const res=await fetch(`https://telloverse.vercel.app/api/answers/${userId}?oldestId=${oldestId}&limit=100&pos=24`);
+      if(!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data=await res.json();
+      if(data.error) throw new Error(data.error);
+
+      let answers = data.answers||data;
+      renderAnswers(answers);
+      if(answers.length>0) oldestId=answers[answers.length-1].id;
+      else { finished=true; document.getElementById("loading").innerText="No more answers."; }
+    } catch(err) {
+      document.getElementById("error").innerText="Failed to load more: "+err.message;
+    } finally{ loading=false; }
+  }
+
+  async function loadAllAnswers() { while(!finished) await loadMore(); showAlert(); }
+
+  function downloadAnswers() {
+    if(allAnswers.length===0) { alert("No answers to download yet!"); return; }
+    let text = allAnswers.map(a=>`q) ${a.tell}\nans) ${a.answer}\n`).join("\n");
+    let blob = new Blob([text],{type:"text/plain"});
+    let link = document.createElement("a"); link.href=URL.createObjectURL(blob);
+    link.download=`${username}_answers.txt`; link.click();
+
+    // Rewarded modal ad (kept as in your original)
+    const adModal=document.createElement("div"); adModal.style.display="flex"; adModal.style.position="fixed"; adModal.style.top="0"; adModal.style.left="0"; adModal.style.width="100%"; adModal.style.height="100%"; adModal.style.background="rgba(0,0,0,0.7)"; adModal.style.alignItems="center"; adModal.style.justifyContent="center"; adModal.style.zIndex="3000";
+    adModal.innerHTML=`<div style="background:#1a1a1a;padding:25px 30px;border-radius:50px;text-align:center;max-width:300px;color:#fff;">
+      <h3>🎉 Thanks for using Telloverse!</h3>
+      <p>Here's a sponsored ad:</p>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-format="fluid"
+           data-ad-layout-key="-ef+6k-30-ac+ty"
+           data-ad-client="ca-pub-8226264829595977"
+           data-ad-slot="2208311961"></ins>
+      <button style="margin-top:15px;padding:8px 18px;border:none;border-radius:50px;background:#ff3c7d;color:#fff;cursor:pointer;" onclick="this.parentElement.parentElement.remove();">(Close)</button>
+    </div>`;
+    document.body.appendChild(adModal); (adsbygoogle = window.adsbygoogle || []).push({});
+  }
+
+  window.addEventListener("scroll",()=>{ if(window.innerHeight+window.scrollY>=document.body.offsetHeight-200) loadMore(); });
+
+  function showAlert(){ document.getElementById("customAlert").style.display="flex"; }
+  function closeAlert(){ document.getElementById("customAlert").style.display="none"; }
+
+  const cursor=document.getElementById("cursor");
+  document.addEventListener("mousemove",e=>{ cursor.style.left=e.pageX+"px"; cursor.style.top=e.pageY+"px"; });
+</script>
+</body>
+</html>
