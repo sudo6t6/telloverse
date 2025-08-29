@@ -167,7 +167,7 @@
 
   async function loadProfile() {
     try {
-      const res = await fetch(`https://telloverse-git-main-zaids-projects-dd67388a.vercel.app/api/profiles/name/${username}?limit=25`);
+      const res = await fetch(`https://telloverse.vercel.app/api/profiles/name/${username}?limit=25`);
       if(!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       if(data.error) throw new Error(data.error);
@@ -224,7 +224,7 @@
     if(loading || finished || !userId || !oldestId) return;
     loading=true; document.getElementById("loading").innerText="Loading more...";
     try {
-      const res=await fetch(`https://telloverse-git-main-zaids-projects-dd67388a.vercel.app/api/answers/${userId}?oldestId=${oldestId}&limit=100&pos=24`);
+      const res=await fetch(`https://telloverse.vercel.app/api/answers/${userId}?oldestId=${oldestId}&limit=100&pos=24`);
       if(!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data=await res.json();
       if(data.error) throw new Error(data.error);
